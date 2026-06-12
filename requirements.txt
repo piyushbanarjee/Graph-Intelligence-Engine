@@ -1,0 +1,7 @@
+streamlit
+chromadb
+networkx
+pyvis
+xgboost
+rapidfuzz
+sqlalchemy

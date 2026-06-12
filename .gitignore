@@ -1,0 +1,6 @@
+BUILD_GUIDE.md.pdf
+# Ignore Python virtual environments
+venv/
+.venv/
+env/
+ENV/

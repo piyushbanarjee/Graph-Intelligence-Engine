@@ -41,4 +41,4 @@ def resolve_entity(new_name):
     return best_match, best_value
 
 if __name__ == "__main__":
-    pass
+    train_classifier()

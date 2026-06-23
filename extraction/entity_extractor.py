@@ -5,6 +5,7 @@ from ingestion.embedder import collection
 from ingestion.store import save_entites, save_relationships
 from resolution.classifier import resolve_entity
 from graph.builder import add_all_entities, add_all_relationships, save_graph
+from graph.builder import add_all_entities, add_all_relationships, save_graph
 
 class ER_entity(BaseModel):
     name: str = Field(description="Name of the entity")
@@ -102,7 +103,7 @@ def entity_json(text, max_retries=2):
 
 
 def extract_from_document(document_id):
-    document_chunks = collection.get(where={"document_id": str(document_id)})
+    document_chunks = collection.get(where={"document_id": document_id})
     chunk_ids = document_chunks['ids']
     chunk_texts = document_chunks["documents"]
     resolution_cache = {}  # raw_name -> (canonical_name, confidence)

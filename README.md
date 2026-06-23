@@ -151,21 +151,115 @@ ollama pull nomic-embed-text
 
 ### 2. Set Up Python Environment
 ```bash
-# Create virtual environment
+# Linux/Mac
 python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-# Activate it
-source venv/bin/activate  # Linux/Mac
-# or
-.\venv\Scripts\activate  # Windows
+# Windows (PowerShell)
+python -m venv venv
+.\venv\Scripts\Activate
+pip install -r requirements.txt
 
-# Install dependencies
+# Windows (Command Prompt)
+python -m venv venv
+.\venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
 ---
 
-## Quick Start (3 Commands)
+## Quick Start (Single Command)
+
+### 1. Add Your Documents
+```bash
+# Linux/Mac
+cp ~/my_documents/*.pdf "Input Files/"
+
+# Windows (PowerShell)
+Copy-Item "C:\Users\YourName\Documents\*.pdf" -Destination "Input Files\"
+```
+
+### 2. Run Everything
+```bash
+# Linux/Mac
+./venv/bin/python run.py
+
+# Windows
+.\venv\Scripts\python run.py
+```
+
+**What it does:**
+1. ✅ Processes all documents in `Input Files/`
+2. ✅ Builds the knowledge graph
+3. ✅ Opens the graph visualization automatically
+4. ✅ Launches interactive query interface
+
+That's it! One command, complete workflow.
+
+---
+
+## Example Session
+
+```bash
+# Linux/Mac
+$ ./venv/bin/python run.py
+
+# Windows
+> .\venv\Scripts\python run.py
+
+🔍 OSINT GRAPH INTELLIGENCE ENGINE
+======================================================================
+
+STEP 1: DOCUMENT INGESTION & ENTITY EXTRACTION
+======================================================================
+
+📂 Found 3 file(s) to process:
+   • document1.pdf
+   • document2.pdf
+   • document3.txt
+
+[Processing each file...]
+
+✅ PIPELINE COMPLETE
+
+📊 Knowledge Base:
+   • Documents:     3
+   • Entities:      45
+   • Relationships: 67
+
+STEP 2: OPENING GRAPH VISUALIZATION
+======================================================================
+📊 Opening graph visualization...
+[Graph image opens automatically in your default image viewer]
+
+STEP 3: INTERACTIVE QUERY INTERFACE
+======================================================================
+
+Ask questions about your documents.
+Type 'help' for examples, 'exit' to quit.
+
+❓ Your question: Who is John Wick?
+🔍 Searching knowledge base...
+
+📝 Answer:
+----------------------------------------------------------------------
+John Wick is a tactical operator with EXTREME THREAT LEVEL...
+----------------------------------------------------------------------
+
+❓ Your question: What is the relationship between Wick and Charon?
+🔍 Searching knowledge base...
+
+📝 Answer:
+----------------------------------------------------------------------
+[Answer appears here...]
+----------------------------------------------------------------------
+
+❓ Your question: exit
+👋 Goodbye!
+```
+
+---
 
 ### Step 1: Add Your Documents
 ```bash
@@ -251,8 +345,29 @@ start graph/graph_preview.png     # Windows
 
 ## Advanced Usage
 
+### Merge Duplicate Entities
+
+If you notice duplicate entities in your graph (e.g., "John Wick", "Wick", "J. Wick" as separate nodes), run the duplicate merger:
+
+```bash
+# Linux/Mac
+./venv/bin/python merge_duplicates.py
+
+# Windows
+.\venv\Scripts\python merge_duplicates.py
+```
+
+This uses the LLM to intelligently identify and merge duplicates. It will:
+- Analyze all entities for potential duplicates
+- Show you what it found
+- Ask for confirmation before merging
+- Update the database and rebuild the graph
+
+### Individual Pipeline Stages
+
 For granular control over individual pipeline stages:
 
+### Linux/Mac
 ```bash
 # Ingest a single file
 ./venv/bin/python -m ingestion.pipeline "path/to/document.pdf"
@@ -266,8 +381,32 @@ For granular control over individual pipeline stages:
 # Regenerate visualization
 ./venv/bin/python -m graph.visualizer
 
-# Query programmatically
-./venv/bin/python -c "from retrieval.retriever import answer_with_context; print(answer_with_context('Your question'))"
+# Single question query
+./venv/bin/python query.py "Your question here"
+
+# Interactive query session
+./venv/bin/python interactive_query.py
+```
+
+### Windows
+```powershell
+# Ingest a single file
+.\venv\Scripts\python -m ingestion.pipeline "path\to\document.pdf"
+
+# Extract entities from document_id 1
+.\venv\Scripts\python -c "from extraction.entity_extractor import extract_from_document; extract_from_document(1)"
+
+# Rebuild graph from database
+.\venv\Scripts\python -c "from graph.builder import add_all_entities, add_all_relationships, save_graph; add_all_entities(); add_all_relationships(); save_graph()"
+
+# Regenerate visualization
+.\venv\Scripts\python -m graph.visualizer
+
+# Single question query
+.\venv\Scripts\python query.py "Your question here"
+
+# Interactive query session
+.\venv\Scripts\python interactive_query.py
 ```
 
 ---

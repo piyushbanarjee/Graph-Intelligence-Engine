@@ -21,4 +21,6 @@ def build_feature_vector(name1, name2):
     return [name_similarity_score(name1, name2), cooccurrence_score(name1, name2)]
 
 if __name__ == "__main__":
-    pass
+    print(name_similarity_score("Zakit okemfadsnfklnklfaeklm","Piyush Banarjee"),
+    name_similarity_score("Ajay Bhattacharya","Piyush Banarjee"),
+    name_similarity_score("Piyush","Piyush Banarjee"))

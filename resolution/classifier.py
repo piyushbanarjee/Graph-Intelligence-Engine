@@ -20,26 +20,35 @@ def train_classifier():
         pickle.dump(model, file)
 
 
-def resolve_entity(new_name):
-    with open ('resolution/XGB_entity_model.pkl', 'rb') as file:
+# Threshold set to 0.9 to prevent all passthroughs because XGB is giving same scores to all, and not to the correct answer
+def resolve_entity(names, new_name, threshold= 0.9):
+    with open('resolution/XGB_entity_model.pkl', 'rb') as file:
         model = pickle.load(file)
 
-    names = get_all_entity_data()[0]
-    same_person_probability = {}
+    if not names:
+        names = get_all_entity_data()[0]
 
+    same_person_probability = {}
     for name in names:
-        # 
         x = model.predict_proba([build_feature_vector(name, new_name)])
         is_same_person = x[0][1]
         same_person_probability.update({name: is_same_person})
-    
+
     if not same_person_probability:
         return None, 0.0
-    
-    best_match = max(same_person_probability, key = same_person_probability.get)
+
+    best_match = max(same_person_probability, key=same_person_probability.get)
     best_value = same_person_probability[best_match]
+
+    if best_value < threshold:
+        return None, 0.0
 
     return best_match, best_value
 
 if __name__ == "__main__":
-    train_classifier()
+    from resolution.training_data import training_pairs
+
+    labels = [pair[2] for pair in training_pairs]
+    print(labels)
+    print("Positives:", sum(labels), "Total:", len(labels))
+    print([build_feature_vector(p[0], p[1]) for p in training_pairs[:5]])

@@ -15,11 +15,6 @@ ENV/
 *.egg-info/
 .pytest_cache/
 
-# Data files (generated during runtime)
-data/
-data/intelligence.db
-data/chromadb/
-
 # ML models and graphs (generated)
 *.pkl
 graph/ER_Graph.pkl

@@ -1,6 +1,48 @@
-# Ignore Python virtual environments
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 venv/
 .venv/
 env/
 ENV/
+*.egg-info/
+.pytest_cache/
+
+# Data files (generated during runtime)
 data/
+data/intelligence.db
+data/chromadb/
+
+# ML models and graphs (generated)
+*.pkl
+graph/ER_Graph.pkl
+graph/graph_preview.png
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test and scratch files
+test_*.py
+scratch_*.py
+debug_*.py
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# Documentation (keep only main docs)
+END_TO_END_TEST_REPORT.md
+SINGLE_COMMAND_SUMMARY.md

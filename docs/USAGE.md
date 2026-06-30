@@ -9,7 +9,7 @@ Process all documents in one go:
 ```
 
 This will:
-1. ✅ Ingest all files from `Input Files/` folder (PDF, TXT)
+1. ✅ Ingest all files from `input_files/` folder (PDF, TXT)
 2. ✅ Extract entities and relationships using LLM
 3. ✅ Build the knowledge graph
 4. ✅ Generate a visualization PNG
@@ -20,10 +20,10 @@ This will:
 
 ### 1. Prepare Your Documents
 
-Place all documents you want to analyze in the `Input Files/` folder:
+Place all documents you want to analyze in the `input_files/` folder:
 
 ```bash
-Input Files/
+input_files/
 ├── document1.pdf
 ├── document2.txt
 └── report.pdf
@@ -84,8 +84,8 @@ After running the pipeline:
 |------|-------------|
 | `data/intelligence.db` | SQLite database with documents, entities, relationships |
 | `data/chromadb/` | Vector embeddings for semantic search |
-| `graph/ER_Graph.pkl` | NetworkX knowledge graph (Python pickle) |
-| `graph/graph_preview.png` | Visual graph visualization (PNG) |
+| `output/ER_Graph.pkl` | NetworkX knowledge graph (Python pickle) |
+| `output/graph_preview.png` | Visual graph visualization (PNG) |
 
 ---
 
@@ -97,7 +97,7 @@ The system detects when "John Wick", "J. Wick", and "Wick" refer to the same per
 ### ✅ Incremental Processing
 - Already ingested documents are skipped
 - Already extracted entities are skipped
-- You can add new files to `Input Files/` and run again
+- You can add new files to `input_files/` and run again
 
 ### ✅ Source Citations
 Answers cite which document chunks they're based on - no hallucination.
@@ -174,7 +174,7 @@ Finds both:
 
 ```bash
 # 1. Add documents to process
-cp ~/Downloads/dossier*.pdf "Input Files/"
+cp ~/Downloads/dossier*.pdf "input_files/"
 
 # 2. Run full pipeline
 ./venv/bin/python run_full_ingestion.py
@@ -183,10 +183,10 @@ cp ~/Downloads/dossier*.pdf "Input Files/"
 # ✅ Ingested 3 documents
 # ✅ Extracted 45 entities
 # ✅ Built graph with 45 nodes, 67 edges
-# ✅ Generated graph/graph_preview.png
+# ✅ Generated output/graph_preview.png
 
 # 3. View the graph
-xdg-open graph/graph_preview.png
+xdg-open output/graph_preview.png
 
 # 4. Query the knowledge base
 ./venv/bin/python -c "
@@ -199,11 +199,11 @@ print(answer_with_context('Who are the key players in the Continental?'))
 
 ## Troubleshooting
 
-### "No files found in Input Files"
+### "No files found in input_files"
 Make sure you've created the folder and added documents:
 ```bash
-mkdir -p "Input Files"
-cp your_document.pdf "Input Files/"
+mkdir -p "input_files"
+cp your_document.pdf "input_files/"
 ```
 
 ### Ollama connection errors
@@ -218,7 +218,7 @@ ollama serve
 ### Out of memory during extraction
 Reduce the number of files or process them one at a time:
 ```bash
-./venv/bin/python -m ingestion.pipeline "Input Files/large_doc.pdf"
+./venv/bin/python -m ingestion.pipeline "input_files/large_doc.pdf"
 ./venv/bin/python -c "from extraction.entity_extractor import extract_from_document; extract_from_document(1)"
 ```
 
@@ -226,7 +226,7 @@ Reduce the number of files or process them one at a time:
 
 ## Next Steps
 
-- View `graph/graph_preview.png` to explore entity connections
+- View `output/graph_preview.png` to explore entity connections
 - Query the system using `retrieval.retriever.answer_with_context()`
 - Build a Streamlit UI for interactive exploration (see `README.md`)
-- Add more documents to `Input Files/` and run again
+- Add more documents to `input_files/` and run again

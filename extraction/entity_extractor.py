@@ -2,9 +2,8 @@ import ollama
 from pydantic import BaseModel, Field
 from typing import Literal
 from ingestion.embedder import collection
-from ingestion.store import save_entites, save_relationships
+from ingestion.store import save_entites, save_relationships, save_entity_alias
 from resolution.classifier import resolve_entity
-from graph.builder import add_all_entities, add_all_relationships, save_graph
 from graph.builder import add_all_entities, add_all_relationships, save_graph
 
 class ER_entity(BaseModel):
@@ -120,11 +119,17 @@ def extract_from_document(document_id):
                 resolution_cache[entity.name] = resolve_entity([], entity.name)
             canonical_name, confidence = resolution_cache[entity.name]
             final_name = canonical_name if canonical_name else entity.name
+            
+            # Save the entity with its canonical name
             save_entites(
                 document_id=document_id,
                 name=final_name,
                 role=entity.role
             )
+            
+            # If this is an alias (different from canonical), save the alias mapping
+            if canonical_name and entity.name != canonical_name:
+                save_entity_alias(canonical_name, entity.name, confidence)
 
         for relationship in relation_result.relationships:
             origin_canonical, _ = resolution_cache.get(relationship.origin, (None, 0.0))

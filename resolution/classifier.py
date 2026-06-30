@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from xgboost import XGBClassifier
 import pickle
 from resolution.scorer import build_feature_vector
@@ -16,13 +17,13 @@ def train_classifier():
     model = XGBClassifier()
     model.fit(x,y)
 
-    with open ('resolution/XGB_entity_model.pkl', 'wb') as file:
+    with open ('models/XGB_entity_model.pkl', 'wb') as file:
         pickle.dump(model, file)
 
 
 # Threshold set to 0.9 to prevent all passthroughs because XGB is giving same scores to all, and not to the correct answer
 def resolve_entity(names, new_name, threshold= 0.9):
-    with open('resolution/XGB_entity_model.pkl', 'rb') as file:
+    with open('models/XGB_entity_model.pkl', 'rb') as file:
         model = pickle.load(file)
 
     if not names:

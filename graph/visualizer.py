@@ -4,7 +4,7 @@ import networkx as nx
 from .builder import load_graph
 
 
-def visualize_graph(output_path="graph/graph_preview.png"):
+def visualize_graph(output_path="output/graph_preview.png"):
     """
     Load the knowledge graph and render it as a static PNG.
     
@@ -24,37 +24,55 @@ def visualize_graph(output_path="graph/graph_preview.png"):
         
         print(f"📊 Visualizing graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
         
-        # Set up the figure
-        plt.figure(figsize=(12, 12))
+        # Set up a larger figure for better spacing
+        plt.figure(figsize=(16, 16))
         
-        # Use spring layout for node positioning
-        pos = nx.spring_layout(G, k=0.5, iterations=50, seed=42)
+        # Use spring layout with a larger k value for wider node distribution
+        pos = nx.spring_layout(G, k=1.5, iterations=60, seed=42)
+        
+        # Color-code nodes by their extracted role type
+        node_roles = nx.get_node_attributes(G, 'role')
+        def get_node_color(node):
+            role = str(node_roles.get(node, 'other')).lower()
+            if any(p in role for p in ['person', 'operator', 'concierge', 'manager', 'executioner', 'king']):
+                return '#ff8c69'  # Coral/Salmon for people
+            elif any(o in role for o in ['org', 'syndicate', 'table', 'network', 'mob']):
+                return '#6495ed'  # Cornflower Blue for organizations
+            elif any(l in role for l in ['loc', 'sanctuary', 'hotel']):
+                return '#3cb371'  # Medium Sea Green for locations
+            else:
+                return '#dda0dd'  # Plum for others (e.g. source material)
+                
+        node_colors = [get_node_color(node) for node in G.nodes()]
         
         # Draw the nodes
         nx.draw_networkx_nodes(
             G, pos,
-            node_color='lightblue',
-            node_size=1500,
-            alpha=0.9
+            node_color=node_colors,
+            node_size=1800,
+            alpha=0.95,
+            edgecolors='#555555',
+            linewidths=1.5
         )
         
         # Draw the edges
         nx.draw_networkx_edges(
             G, pos,
-            edge_color='gray',
-            alpha=0.5,
+            edge_color='#888888',
+            alpha=0.6,
             width=1.5,
             arrows=True,
-            arrowsize=15,
+            arrowsize=18,
             arrowstyle='->'
         )
         
-        # Draw the labels
+        # Draw the labels with high-readability background bboxes to prevent overlapping
         nx.draw_networkx_labels(
             G, pos,
             font_size=9,
             font_weight='bold',
-            font_family='sans-serif'
+            font_family='sans-serif',
+            bbox=dict(boxstyle="round,pad=0.3", fc="#ffffff", ec="#dddddd", lw=1, alpha=0.9)
         )
         
         # Draw edge labels if they exist
@@ -63,17 +81,18 @@ def visualize_graph(output_path="graph/graph_preview.png"):
             nx.draw_networkx_edge_labels(
                 G, pos,
                 edge_labels,
-                font_size=7,
-                font_color='darkred',
-                alpha=0.7
+                font_size=7.5,
+                font_color='#8b0000',  # Dark red
+                alpha=0.85,
+                bbox=dict(boxstyle="round,pad=0.2", fc="#ffffff", ec="none", alpha=0.85)
             )
         
-        plt.title("OSINT Knowledge Graph", fontsize=16, fontweight='bold', pad=20)
+        plt.title("OSINT Graph Intelligence Map", fontsize=18, fontweight='bold', pad=20, color='#333333')
         plt.axis('off')
         plt.tight_layout()
         
-        # Save the figure
-        plt.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='white')
+        # Save the figure with high resolution
+        plt.savefig(output_path, dpi=200, bbox_inches='tight', facecolor='white')
         print(f"✅ Graph saved to: {output_path}")
         
         plt.close()

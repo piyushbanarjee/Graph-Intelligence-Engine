@@ -5,9 +5,10 @@
 ```
 OSINT-Graph-Intelligence-Engine/
 │
-├── run_full_ingestion.py      # Main entry point - runs entire pipeline
-├── interactive_query.py        # Interactive Q&A interface
-├── query.py                    # Single question CLI
+├── run.py                      # Main entry point - runs entire pipeline
+├── scripts/                    # Helper scripts
+│   ├── interactive_query.py    # Interactive Q&A interface
+│   └── query.py                # Single question CLI
 │
 ├── ingestion/                  # Document ingestion pipeline
 │   ├── pipeline.py            # Orchestrates ingestion flow
@@ -22,25 +23,29 @@ OSINT-Graph-Intelligence-Engine/
 ├── resolution/                 # Entity resolution
 │   ├── classifier.py          # XGBoost duplicate detection
 │   ├── scorer.py              # Name similarity + co-occurrence scoring
-│   ├── training_data.py       # Training examples for classifier
+│   └── training_data.py       # Training examples for classifier
+│
+├── models/                     # Machine learning models
 │   └── XGB_entity_model.pkl   # Pre-trained XGBoost model
 │
 ├── graph/                      # Knowledge graph
 │   ├── builder.py             # NetworkX graph construction
-│   ├── visualizer.py          # Graph visualization (matplotlib)
-│   ├── ER_Graph.pkl           # Generated graph (gitignored)
-│   └── graph_preview.png      # Generated visualization (gitignored)
+│   └── visualizer.py          # Graph visualization (matplotlib)
 │
 ├── retrieval/                  # RAG pipeline
 │   └── retriever.py           # ChromaDB search + LLM answer generation
 │
-├── Input Files/                # Drop documents here for processing
+├── input_files/                # Drop documents here for processing
 │   ├── *.pdf
 │   └── *.txt
 │
 ├── data/                       # Generated data (gitignored)
 │   ├── intelligence.db        # SQLite database
 │   └── chromadb/              # Vector embeddings
+│
+├── output/                     # Generated data (gitignored)
+│   ├── ER_Graph.pkl           # Generated graph (gitignored)
+│   └── graph_preview.png      # Generated visualization (gitignored)
 │
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # Main documentation
@@ -52,9 +57,9 @@ OSINT-Graph-Intelligence-Engine/
 ## Data Flow
 
 ```
-Input Files/*.pdf,*.txt
+input_files/*.pdf,*.txt
         ↓
-run_full_ingestion.py
+run.py
         ↓
     ┌───────────────┐
     │  INGESTION    │  → data/intelligence.db (SQLite)
@@ -67,8 +72,8 @@ run_full_ingestion.py
     └───────┬───────┘
             ↓
     ┌───────────────┐
-    │  GRAPH BUILD  │  → graph/ER_Graph.pkl
-    │  (NetworkX)   │  → graph/graph_preview.png
+    │  GRAPH BUILD  │  → output/ER_Graph.pkl
+    │  (NetworkX)   │  → output/graph_preview.png
     └───────┬───────┘
             ↓
     ┌───────────────┐
@@ -112,16 +117,16 @@ run_full_ingestion.py
 
 | File | Purpose | Usage |
 |------|---------|-------|
-| `run_full_ingestion.py` | Process all documents | `./venv/bin/python run_full_ingestion.py` |
-| `interactive_query.py` | Ask questions interactively | `./venv/bin/python interactive_query.py` |
-| `query.py` | Single question | `./venv/bin/python query.py "question"` |
+| `run.py` | Process all documents | `./venv/bin/python run.py` |
+| `scripts/interactive_query.py` | Ask questions interactively | `./venv/bin/python scripts/interactive_query.py` |
+| `scripts/query.py` | Single question | `./venv/bin/python scripts/query.py "question"` |
 
 ## Generated Files (Gitignored)
 
 - `data/intelligence.db` - SQLite database with entities/relationships
 - `data/chromadb/` - Vector embeddings for semantic search
-- `graph/ER_Graph.pkl` - NetworkX graph pickle
-- `graph/graph_preview.png` - Visual graph rendering
+- `output/ER_Graph.pkl` - NetworkX graph pickle
+- `output/graph_preview.png` - Visual graph rendering
 - `*/__pycache__/` - Python bytecode cache
 
 ## Documentation

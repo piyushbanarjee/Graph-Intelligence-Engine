@@ -10,6 +10,9 @@ Examples:
     ./venv/bin/python query.py "What is the relationship between Wick and Charon?"
 """
 import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from retrieval.retriever import answer_with_context
 
 def main():

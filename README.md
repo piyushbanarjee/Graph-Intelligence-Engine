@@ -106,6 +106,32 @@ Without resolution, each becomes a separate node, fragmenting the graph and brea
 
 The resolution engine scores every new entity against existing ones using name-similarity features, and an XGBoost classifier outputs a confidence score. A conservative threshold is used deliberately: it's better to under-merge (treat two mentions as separate when they're actually the same) than to wrongly merge two distinct people, since a bad merge silently corrupts every downstream query. Co-occurrence-based scoring (how often two names appear near each other across real documents) is planned once document volume makes that signal meaningful.
 
+### Alias Consolidation
+
+**All aliases are now consolidated under a single canonical entity.** When the system identifies that "John Wick", "Wick", and "J. Wick" refer to the same person, it:
+
+1. **Stores one canonical entity** (e.g., "John Wick") in the database and graph
+2. **Tracks all aliases** ("Wick", "J. Wick") in a separate alias table with confidence scores
+3. **Uses the canonical name in all relationships** — so edges connect to "John Wick", not the individual aliases
+4. **Attaches alias metadata to graph nodes** — you can see all known aliases for any entity
+
+This means:
+- **No duplicate nodes** for the same person/organization
+- **No fragmented relationships** — all connections route through the canonical entity
+- **Full alias visibility** — you can still see which name variants were found in the source documents
+
+**View consolidated entities:**
+```bash
+# See all entities with their aliases
+python scripts/view_entities_with_aliases.py
+```
+
+**Migrate existing data:**
+```bash
+# If you already have data, run this once to consolidate it
+python scripts/migrate_aliases.py
+```
+
 ---
 
 ## Tech Stack
@@ -174,10 +200,10 @@ pip install -r requirements.txt
 ### 1. Add Your Documents
 ```bash
 # Linux/Mac
-cp ~/my_documents/*.pdf "Input Files/"
+cp ~/my_documents/*.pdf "input_files/"
 
 # Windows (PowerShell)
-Copy-Item "C:\Users\YourName\Documents\*.pdf" -Destination "Input Files\"
+Copy-Item "C:\Users\YourName\Documents\*.pdf" -Destination "input_files\"
 ```
 
 ### 2. Run Everything
@@ -190,7 +216,7 @@ Copy-Item "C:\Users\YourName\Documents\*.pdf" -Destination "Input Files\"
 ```
 
 **What it does:**
-1. ✅ Processes all documents in `Input Files/`
+1. ✅ Processes all documents in `input_files/`
 2. ✅ Builds the knowledge graph
 3. ✅ Opens the graph visualization automatically
 4. ✅ Launches interactive query interface
@@ -263,8 +289,8 @@ John Wick is a tactical operator with EXTREME THREAT LEVEL...
 
 ### Step 1: Add Your Documents
 ```bash
-# Place PDFs or text files in the Input Files folder
-cp ~/my_documents/*.pdf "Input Files/"
+# Place PDFs or text files in the input_files folder
+cp ~/my_documents/*.pdf "input_files/"
 ```
 
 ### Step 2: Run the Full Pipeline
@@ -287,8 +313,8 @@ cp ~/my_documents/*.pdf "Input Files/"
    • Relationships: 63
 
 📁 Output Files:
-   • Knowledge Graph: graph/ER_Graph.pkl
-   • Visualization:   graph/graph_preview.png
+   • Knowledge Graph: output/ER_Graph.pkl
+   • Visualization:   output/graph_preview.png
    • Database:        data/intelligence.db
 ```
 
@@ -296,7 +322,7 @@ cp ~/my_documents/*.pdf "Input Files/"
 
 **Interactive Session (Recommended)**
 ```bash
-./venv/bin/python interactive_query.py
+./venv/bin/python scripts/interactive_query.py
 ```
 
 Ask questions interactively:
@@ -315,7 +341,7 @@ John Wick is a tactical operator with EXTREME THREAT LEVEL...
 
 **Alternative: Single Question**
 ```bash
-./venv/bin/python query.py "Who is John Wick?"
+./venv/bin/python scripts/query.py "Who is John Wick?"
 ```
 
 **Alternative: From Python Code**
@@ -334,9 +360,9 @@ The graph visualization is automatically generated:
 
 ```bash
 # View the graph
-xdg-open graph/graph_preview.png  # Linux
-open graph/graph_preview.png      # Mac
-start graph/graph_preview.png     # Windows
+xdg-open output/graph_preview.png  # Linux
+open output/graph_preview.png      # Mac
+start output/graph_preview.png     # Windows
 ```
 
 ---
@@ -351,10 +377,10 @@ If you notice duplicate entities in your graph (e.g., "John Wick", "Wick", "J. W
 
 ```bash
 # Linux/Mac
-./venv/bin/python merge_duplicates.py
+./venv/bin/python scripts/migrate_aliases.py
 
 # Windows
-.\venv\Scripts\python merge_duplicates.py
+.\venv\Scripts\python scripts/migrate_aliases.py
 ```
 
 This uses the LLM to intelligently identify and merge duplicates. It will:
@@ -382,10 +408,10 @@ For granular control over individual pipeline stages:
 ./venv/bin/python -m graph.visualizer
 
 # Single question query
-./venv/bin/python query.py "Your question here"
+./venv/bin/python scripts/query.py "Your question here"
 
 # Interactive query session
-./venv/bin/python interactive_query.py
+./venv/bin/python scripts/interactive_query.py
 ```
 
 ### Windows
@@ -403,10 +429,10 @@ For granular control over individual pipeline stages:
 .\venv\Scripts\python -m graph.visualizer
 
 # Single question query
-.\venv\Scripts\python query.py "Your question here"
+.\venv\Scripts\python scripts/query.py "Your question here"
 
 # Interactive query session
-.\venv\Scripts\python interactive_query.py
+.\venv\Scripts\python scripts/interactive_query.py
 ```
 
 ---

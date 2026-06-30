@@ -43,6 +43,5 @@ if __name__ == '__main__':
         where = {"document_id": "test"}
         )
     print(result["documents"])
-    # result = collection.query(query_texts="how do i breach the biometric", n_results=1)
-    # print(result['documents'][0])
+    
     collection.delete(where={"document_id": "test"})

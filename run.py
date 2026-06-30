@@ -3,7 +3,7 @@
 OSINT Graph Intelligence Engine - Complete Workflow
 
 This script runs the entire pipeline in sequence:
-1. Ingests all documents from 'Input Files/'
+1. Ingests all documents from 'input_files/'
 2. Extracts entities and builds knowledge graph
 3. Opens the graph visualization
 4. Launches interactive query interface
@@ -44,12 +44,12 @@ def open_file(filepath):
 
 
 def run_ingestion_pipeline():
-    """Step 1: Ingest all documents from Input Files folder"""
+    """Step 1: Ingest all documents from input_files folder"""
     print("\n" + "=" * 70)
     print("STEP 1: DOCUMENT INGESTION & ENTITY EXTRACTION")
     print("=" * 70)
     
-    input_folder = "Input Files"
+    input_folder = "input_files"
     supported_extensions = [".txt", ".pdf"]
     
     if not os.path.exists(input_folder):
@@ -157,6 +157,13 @@ def run_ingestion_pipeline():
             print(f"   ❌ Extraction failed: {e}")
             continue
     
+    # Run context-aware alias resolution to group and consolidate person variations
+    try:
+        from resolution.context_resolver import run_context_alias_resolution
+        run_context_alias_resolution()
+    except Exception as e:
+        print(f"⚠️  Context-aware alias consolidation failed: {e}")
+
     # Build knowledge graph
     print(f"\n{'=' * 70}")
     print("Building knowledge graph...")
@@ -211,7 +218,7 @@ def show_graph():
     print("STEP 2: OPENING GRAPH VISUALIZATION")
     print("=" * 70)
     
-    graph_path = "graph/graph_preview.png"
+    graph_path = "output/graph_preview.png"
     
     if not os.path.exists(graph_path):
         print(f"\n⚠️  Graph visualization not found at {graph_path}")
@@ -283,7 +290,7 @@ def main():
     print("🔍 OSINT GRAPH INTELLIGENCE ENGINE")
     print("=" * 70)
     print("\nThis will:")
-    print("  1. Process all documents in 'Input Files/'")
+    print("  1. Process all documents in 'input_files/'")
     print("  2. Build and visualize the knowledge graph")
     print("  3. Launch interactive query interface")
     print()

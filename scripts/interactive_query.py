@@ -8,8 +8,11 @@ Type 'exit' or 'quit' to end the session.
 Usage:
     ./venv/bin/python interactive_query.py
 """
-from retrieval.retriever import answer_with_context
 import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from retrieval.retriever import answer_with_context
 
 def print_banner():
     print("\n" + "=" * 70)
